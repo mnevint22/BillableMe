@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/adjustOneInstruct"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enter Your Adjustment In Minutes"
+        android:textColor="@android:color/white"
+        android:textSize="36sp" />
+
+    <EditText
+        android:id="@+id/editAdjustEntryOne"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/darker_gray"
+        android:editable="true"
+        android:ems="10"
+        android:hint="Minutes to Adjust"
+        android:inputType="numberDecimal"
+        android:textColor="@android:color/white"
+        android:textSize="30sp" />
+
+    <Button
+        android:id="@+id/textApplyAdjustOne"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="applyAdjustOne"
+        android:text="Adjust Matter One"
+        android:textSize="36sp" />
+
+</LinearLayout>
