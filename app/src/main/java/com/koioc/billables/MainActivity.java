@@ -3,7 +3,10 @@ package com.koioc.billables;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -347,6 +350,38 @@ public class MainActivity extends AppCompatActivity {
 
         Button buttonStartThree = (Button)findViewById(R.id.buttonStartThree);
         buttonStartThree.setText("Bill " + stringMatterThree);
+    }
+
+    public void emailHours(View view){
+        Log.i("Send Email", "");
+        String[] TO = {""};
+        String[] CC = {""};
+        String textHoursOne = Double.toString(hoursBilledOne);
+        String textHoursTwo = Double.toString(hoursBilledTwo);
+        String textHoursThree = Double.toString(hoursBilledThree);
+        String emailBody =
+                "My billables for today were: \n" +
+                stringMatterOne + ": " + textHoursOne + " hours \n" +
+                stringMatterTwo + ": " + textHoursTwo + " hours \n" +
+                stringMatterThree + ": " + textHoursThree +" hours \n"
+                ;
+        Intent emailIntent = new Intent (Intent.ACTION_SEND);
+
+        emailIntent.setData(Uri.parse("mailto:"));
+        emailIntent.setType("text/plain");
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
+        emailIntent.putExtra(Intent.EXTRA_CC, CC);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "My Billables for Today");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, emailBody);
+
+        try {
+            startActivity(Intent.createChooser(emailIntent, "Send mail to:"));
+            finish();
+            Log.i("Finished sending email", "");
+            } catch (android.content.ActivityNotFoundException ex){
+            Toast.makeText(MainActivity.this, "there is no email client installed", Toast.LENGTH_LONG).show();
+        }
+
     }
 
 
