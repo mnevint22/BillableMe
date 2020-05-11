@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "27787677841",
+    "firebase_url": "https://billable-me.firebaseio.com",
+    "project_id": "billable-me",
+    "storage_bucket": "billable-me.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:27787677841:android:9ef3acbf03439d3eb86f30",
+        "android_client_info": {
+          "package_name": "com.koioc.billables"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "27787677841-hqam70p505j7pc8rvbn0ondll1ao9vji.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdpRPg9iutN8gZcuWvDx4oBahSnemccEU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "27787677841-hqam70p505j7pc8rvbn0ondll1ao9vji.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

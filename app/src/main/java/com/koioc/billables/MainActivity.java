@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.os.Bundle;
+
+import java.text.DecimalFormat;
 import java.util.Locale;
 
 import android.widget.Button;
@@ -46,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
     String stringMatterThree = "Matter Three";
     double testHours = 0;
 
-   /* popup information
+
+   //popup information
     LayoutInflater inflaterOne = (LayoutInflater)
             getSystemService(LAYOUT_INFLATER_SERVICE);
     View popupViewOne = inflaterOne.inflate(R.layout.adjustonelayout, null);
@@ -56,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     int height = LinearLayout.LayoutParams.WRAP_CONTENT;
     boolean focusable = true; // lets taps outside the popup dismiss it
     final PopupWindow popupWindowOne = new PopupWindow(popupViewOne, width, height, focusable);
-*/
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,12 +149,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 double hoursOne = (double) secondsOne / 3600;
+                double roundHoursOne = (Math.floor(hoursOne * 10))/10;
                 int minutesOne = (secondsOne % 3600) / 60;
                 int secsOne = secondsOne % 60;
                 double hoursTwo = (double) secondsTwo / 3600;
+                double roundHoursTwo = (Math.floor(hoursTwo * 10))/10;
                 int minutesTwo = (secondsTwo % 3600) / 60;
                 int secsTwo = secondsTwo % 60;
                 double hoursThree = (double) secondsThree / 3600;
+                double roundHoursThree = (Math.floor(hoursThree*10))/10;
                 int minutesThree = (secondsThree %3600) / 60;
                 int secsThree = secondsThree % 60;
 
@@ -161,8 +167,8 @@ public class MainActivity extends AppCompatActivity {
 
                 }
                 if(secondsOne > 0){
-                    decimalOneAdjust = billIncrement + hoursOne;
-                    testHours = hoursOne;
+                    decimalOneAdjust = billIncrement + roundHoursOne;
+                    testHours = roundHoursOne;
                 } else {
                     decimalOneAdjust = hoursOne;
                 }
@@ -172,9 +178,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if(secondsTwo > 0){
-                    decimalTwoAdjust = billIncrement + hoursTwo;
+                    decimalTwoAdjust = billIncrement + roundHoursTwo;
                 } else {
-                    decimalTwoAdjust = hoursTwo;
+                    decimalTwoAdjust = roundHoursTwo;
                 }
 
                 if(runningThree){
@@ -182,9 +188,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (secondsThree > 0) {
-                    decimalThreeAdjust = billIncrement + hoursThree;
+                    decimalThreeAdjust = billIncrement + roundHoursThree;
                 } else {
-                    decimalThreeAdjust = hoursThree;
+                    decimalThreeAdjust = roundHoursThree;
                 }
 
                 hoursBilledOne = decimalOneAdjust;
@@ -281,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void adjustOne(View view){
 
-        // int inputAdjustOne = 0;
+
 
         EditText enterAdjustOne = findViewById(R.id.enterAdjustOne);
         String strAdjustOne = enterAdjustOne.getText().toString();
@@ -353,17 +359,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void emailHours(View view){
+        runningOne = false;
+        runningTwo = false;
+        runningThree = false;
         Log.i("Send Email", "");
         String[] TO = {""};
         String[] CC = {""};
-        String textHoursOne = Double.toString(hoursBilledOne);
-        String textHoursTwo = Double.toString(hoursBilledTwo);
-        String textHoursThree = Double.toString(hoursBilledThree);
+        String textHoursOne = String.format(Locale.getDefault(), "%.02f", hoursBilledOne);
+        String textHoursTwo = String.format(Locale.getDefault(), "%.02f", hoursBilledTwo);
+        String textHoursThree = String.format(Locale.getDefault(), "%.02f", hoursBilledThree);
         String emailBody =
-                "My billables for today were: \n" +
+                "Today I billed: \n" +
                 stringMatterOne + ": " + textHoursOne + " hours \n" +
                 stringMatterTwo + ": " + textHoursTwo + " hours \n" +
-                stringMatterThree + ": " + textHoursThree +" hours \n"
+                stringMatterThree + ": " + textHoursThree +" hours \n" +
+                        "Using Koioc's Billable Me App \n" +
+                        "www.koioc.com"
                 ;
         Intent emailIntent = new Intent (Intent.ACTION_SEND);
 
