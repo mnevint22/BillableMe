@@ -23,6 +23,12 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
 import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     String stringMatterThree = "Matter Three";
     double testHours = 0;
 
-
+/*
    //popup information
     LayoutInflater inflaterOne = (LayoutInflater)
             getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -60,11 +66,21 @@ public class MainActivity extends AppCompatActivity {
     boolean focusable = true; // lets taps outside the popup dismiss it
     final PopupWindow popupWindowOne = new PopupWindow(popupViewOne, width, height, focusable);
 
-
+*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Ad Code
+        MobileAds.initialize(this, new OnInitializationCompleteListener(){
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus){   }
+        });
+        AdView mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
         if (savedInstanceState != null) {
 
             // Get the previous state of the app
@@ -221,8 +237,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
-    //Expand Adjustment Window
 
     //Start With Matter One
 
