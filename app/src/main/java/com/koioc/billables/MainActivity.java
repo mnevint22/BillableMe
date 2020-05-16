@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.os.Bundle;
+import android.app.Service;
+import android.view.WindowManager;
 
 import java.text.DecimalFormat;
 import java.util.Locale;
@@ -31,7 +33,11 @@ import com.google.android.gms.ads.initialization.OnInitializationCompleteListene
 
 import org.w3c.dom.Text;
 
+
+
 public class MainActivity extends AppCompatActivity {
+
+
 
     double billIncrement = .1;
     int secondsOne = 0;
@@ -70,7 +76,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
         setContentView(R.layout.activity_main);
+
+
 
         //Ad Code
         MobileAds.initialize(this, new OnInitializationCompleteListener(){
