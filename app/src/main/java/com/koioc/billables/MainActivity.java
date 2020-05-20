@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -38,7 +40,6 @@ import org.w3c.dom.Text;
 public class MainActivity extends AppCompatActivity {
 
 
-
     double billIncrement = .1;
     int secondsOne = 0;
     int secondsTwo = 0;
@@ -55,42 +56,51 @@ public class MainActivity extends AppCompatActivity {
     boolean wasRunningOne;
     boolean wasRunningTwo;
     boolean wasRunningThree;
+    boolean anyTimerRunning = false;
     String stringMatterOne = "Matter One";
     String stringMatterTwo = "Matter Two";
     String stringMatterThree = "Matter Three";
     double testHours = 0;
+    long endTime;
 
-/*
-   //popup information
-    LayoutInflater inflaterOne = (LayoutInflater)
-            getSystemService(LAYOUT_INFLATER_SERVICE);
-    View popupViewOne = inflaterOne.inflate(R.layout.adjustonelayout, null);
+    /*
+       //popup information
+        LayoutInflater inflaterOne = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupViewOne = inflaterOne.inflate(R.layout.adjustonelayout, null);
 
-    //create popup window
-    int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-    int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-    boolean focusable = true; // lets taps outside the popup dismiss it
-    final PopupWindow popupWindowOne = new PopupWindow(popupViewOne, width, height, focusable);
+        //create popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true; // lets taps outside the popup dismiss it
+        final PopupWindow popupWindowOne = new PopupWindow(popupViewOne, width, height, focusable);
 
-*/
+    */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 
-
         setContentView(R.layout.activity_main);
 
 
-
         //Ad Code
-        MobileAds.initialize(this, new OnInitializationCompleteListener(){
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus){   }
+        //MobileAds.initialize(this, new OnInitializationCompleteListener(){
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-7093767474774984~9927526258");
+        //@Override
+        /*    public void onInitializationComplete(InitializationStatus initializationStatus){   }
         });
+
+         */
         AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+
+        if (runningOne || runningTwo || runningThree) {
+            anyTimerRunning = true;
+        } else {
+            anyTimerRunning = false;
+        }
 
         if (savedInstanceState != null) {
 
@@ -111,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
     // Save the state of the timer
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putInt("secondsOne", secondsOne);
         savedInstanceState.putBoolean("runningOne", runningOne);
         savedInstanceState.putBoolean("wasRunningOne", wasRunningOne);
@@ -141,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
      */
     //if the activity is resumed, start the stopwatch if it was running previously
     //THIS MAY NEED TO BE ELIMINATED IF THE STOPWATCH RUNS WHEN YOU SWITCH APPS
+    /*
     @Override
     protected void onResume() {
         super.onResume();
@@ -154,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
             runningThree = true;
         }
     }
-
+*/
 
     private void runTimer() {
         //Get the text view
@@ -165,10 +177,20 @@ public class MainActivity extends AppCompatActivity {
         final TextView timeViewThree = (TextView) findViewById(R.id.textTimeThree);
         final TextView decimalThree = (TextView) findViewById(R.id.textHourDecThree);
 
-
-
         // creates a new handler
         final Handler handlerOne = new Handler();
+
+        /*
+        //set up the partial wake lock
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyApp::MyWakelockTag");
+        wakeLock.acquire();
+
+
+        if(!anyTimerRunning){
+            wakeLock.release();
+        }
+        */
 
         //call the post method passing in a new Runnable
         //This needs to include each one, not duplicated
@@ -176,16 +198,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 double hoursOne = (double) secondsOne / 3600;
-                double roundHoursOne = (Math.floor(hoursOne * 10))/10;
+                double floorHoursOne = Math.floor(hoursOne);
+                double roundHoursOne = (Math.floor(hoursOne * 10)) / 10;
                 int minutesOne = (secondsOne % 3600) / 60;
                 int secsOne = secondsOne % 60;
                 double hoursTwo = (double) secondsTwo / 3600;
-                double roundHoursTwo = (Math.floor(hoursTwo * 10))/10;
+                double floorHoursTwo = Math.floor(hoursTwo);
+                double roundHoursTwo = (Math.floor(hoursTwo * 10)) / 10;
                 int minutesTwo = (secondsTwo % 3600) / 60;
                 int secsTwo = secondsTwo % 60;
                 double hoursThree = (double) secondsThree / 3600;
-                double roundHoursThree = (Math.floor(hoursThree*10))/10;
-                int minutesThree = (secondsThree %3600) / 60;
+                double floorHoursThree = Math.floor(hoursThree);
+                double roundHoursThree = (Math.floor(hoursThree * 10)) / 10;
+                int minutesThree = (secondsThree % 3600) / 60;
                 int secsThree = secondsThree % 60;
 
                 // run the timer
@@ -193,24 +218,24 @@ public class MainActivity extends AppCompatActivity {
                     secondsOne++;
 
                 }
-                if(secondsOne > 0){
+                if (secondsOne > 0) {
                     decimalOneAdjust = billIncrement + roundHoursOne;
                     testHours = roundHoursOne;
                 } else {
                     decimalOneAdjust = hoursOne;
                 }
 
-                if(runningTwo){
+                if (runningTwo) {
                     secondsTwo++;
                 }
 
-                if(secondsTwo > 0){
+                if (secondsTwo > 0) {
                     decimalTwoAdjust = billIncrement + roundHoursTwo;
                 } else {
                     decimalTwoAdjust = roundHoursTwo;
                 }
 
-                if(runningThree){
+                if (runningThree) {
                     secondsThree++;
                 }
 
@@ -225,13 +250,13 @@ public class MainActivity extends AppCompatActivity {
                 hoursBilledThree = decimalThreeAdjust;
 
                 // format the seconds into hours minutes and seconds
-                String timeOne = String.format(Locale.getDefault(), "%.00f:%02d:%02d", hoursOne, minutesOne, secsOne);
+                String timeOne = String.format(Locale.getDefault(), "%.00f:%02d:%02d", floorHoursOne, minutesOne, secsOne);
                 String decimalOneNumber = String.format(Locale.getDefault(), "%.2f", decimalOneAdjust);
 
-                String timeTwo = String.format(Locale.getDefault(), "%.00f:%02d:%02d", hoursTwo, minutesTwo, secsTwo);
+                String timeTwo = String.format(Locale.getDefault(), "%.00f:%02d:%02d", floorHoursTwo, minutesTwo, secsTwo);
                 String decimalTwoNumber = String.format(Locale.getDefault(), "%.2f", decimalTwoAdjust);
 
-                String timeThree = String.format(Locale.getDefault(), "%.00f:%02d:%02d", hoursThree, minutesThree, secsThree);
+                String timeThree = String.format(Locale.getDefault(), "%.00f:%02d:%02d", floorHoursThree, minutesThree, secsThree);
                 String decimalThreeNumber = String.format(Locale.getDefault(), "%.2f", decimalThreeAdjust);
 
                 // Set the text view text
@@ -247,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
     }
 
     //Start With Matter One
@@ -257,14 +283,14 @@ public class MainActivity extends AppCompatActivity {
         runningThree = false;
     }
 
-    public void startTwo(View view){
+    public void startTwo(View view) {
         runningTwo = true;
         runningOne = false;
         runningThree = false;
 
     }
 
-    public void startThree(View view){
+    public void startThree(View view) {
         runningThree = true;
         runningOne = false;
         runningTwo = false;
@@ -273,23 +299,13 @@ public class MainActivity extends AppCompatActivity {
     public void stopOne(View view) {
         runningOne = false;
 
-
-        // create toast for testing
-        /*
-        Context context = getApplicationContext();
-        String text = String.valueOf(testHours);
-        int duration = Toast.LENGTH_LONG;
-
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
-*/
     }
 
-    public void stopTwo(View view){
+    public void stopTwo(View view) {
         runningTwo = false;
     }
 
-    public void stopThree (View view){
+    public void stopThree(View view) {
         runningThree = false;
     }
 
@@ -298,25 +314,23 @@ public class MainActivity extends AppCompatActivity {
         secondsOne = 0;
     }
 
-    public void resetTwo(View view){
+    public void resetTwo(View view) {
         runningTwo = false;
         secondsTwo = 0;
     }
 
-    public void resetThree(View view){
+    public void resetThree(View view) {
         runningThree = false;
         secondsThree = 0;
     }
 
     // Get the text view
 
-    public void adjustOne(View view){
-
-
+    public void adjustOne(View view) {
 
         EditText enterAdjustOne = findViewById(R.id.enterAdjustOne);
         String strAdjustOne = enterAdjustOne.getText().toString();
-        int inputAdjustOne=Integer.parseInt(strAdjustOne);
+        int inputAdjustOne = Integer.parseInt(strAdjustOne);
         int inputAdjustOneSecs = inputAdjustOne * 60;
 
         secondsOne = secondsOne + inputAdjustOneSecs;
@@ -324,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
         enterAdjustOne.setText("");
     }
 
-    public void adjustTwo(View view){
+    public void adjustTwo(View view) {
 
         EditText enterAdjustTwo = findViewById(R.id.enterAdjustTwo);
         String strAdjustTwo = enterAdjustTwo.getText().toString();
@@ -336,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
         enterAdjustTwo.setText("");
     }
 
-    public void adjustThree(View view){
+    public void adjustThree(View view) {
 
         EditText enterAdjustThree = findViewById(R.id.enterAdjustTwo2);
         String strAdjustThree = enterAdjustThree.getText().toString();
@@ -349,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void nameMatterOne(View view){
+    public void nameMatterOne(View view) {
 
         //Change the name of Matter One
         TextView getMatterOne = findViewById(R.id.textMatterOne);
@@ -357,33 +371,33 @@ public class MainActivity extends AppCompatActivity {
         stringMatterOne = getMatterOneText;
 
         //Change the text in the Button
-        Button buttonStartOne = (Button)findViewById(R.id.buttonStartOne);
+        Button buttonStartOne = (Button) findViewById(R.id.buttonStartOne);
         buttonStartOne.setText("Bill " + stringMatterOne);
 
     }
 
-    public void nameMatterTwo(View view){
+    public void nameMatterTwo(View view) {
 
         TextView getMatterTwo = findViewById(R.id.textMatterTwo);
         String getMatterTwoText = getMatterTwo.getText().toString();
         stringMatterTwo = getMatterTwoText;
 
-        Button buttonStartTwo = (Button)findViewById(R.id.buttonStartTwo);
+        Button buttonStartTwo = (Button) findViewById(R.id.buttonStartTwo);
         buttonStartTwo.setText("Bill " + stringMatterTwo);
 
     }
 
-    public void nameMatterThree(View view){
+    public void nameMatterThree(View view) {
 
         TextView getMatterThree = findViewById(R.id.textMatterThree);
         String getMatterThreeText = getMatterThree.getText().toString();
         stringMatterThree = getMatterThreeText;
 
-        Button buttonStartThree = (Button)findViewById(R.id.buttonStartThree);
+        Button buttonStartThree = (Button) findViewById(R.id.buttonStartThree);
         buttonStartThree.setText("Bill " + stringMatterThree);
     }
 
-    public void emailHours(View view){
+    public void emailHours(View view) {
         runningOne = false;
         runningTwo = false;
         runningThree = false;
@@ -395,13 +409,12 @@ public class MainActivity extends AppCompatActivity {
         String textHoursThree = String.format(Locale.getDefault(), "%.02f", hoursBilledThree);
         String emailBody =
                 "Today I billed: \n" +
-                stringMatterOne + ": " + textHoursOne + " hours \n" +
-                stringMatterTwo + ": " + textHoursTwo + " hours \n" +
-                stringMatterThree + ": " + textHoursThree +" hours \n" +
+                        stringMatterOne + ": " + textHoursOne + " hours \n" +
+                        stringMatterTwo + ": " + textHoursTwo + " hours \n" +
+                        stringMatterThree + ": " + textHoursThree + " hours \n" +
                         "Using Koioc's Billable Me App \n" +
-                        "www.koioc.com"
-                ;
-        Intent emailIntent = new Intent (Intent.ACTION_SEND);
+                        "www.koioc.com";
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
 
         emailIntent.setData(Uri.parse("mailto:"));
         emailIntent.setType("text/plain");
@@ -414,15 +427,60 @@ public class MainActivity extends AppCompatActivity {
             startActivity(Intent.createChooser(emailIntent, "Send mail to:"));
             finish();
             Log.i("Finished sending email", "");
-            } catch (android.content.ActivityNotFoundException ex){
+        } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(MainActivity.this, "there is no email client installed", Toast.LENGTH_LONG).show();
         }
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        endTime = System.currentTimeMillis();
+
+        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("secondsOne", secondsOne);
+        editor.putBoolean("timerOneRunning", runningOne);
+        editor.putInt("secondsTwo", secondsTwo);
+        editor.putBoolean("timerTwoRunning", runningTwo);
+        editor.putInt("secondsThree", secondsThree);
+        editor.putBoolean("timerThreeRunning", runningThree);
+        editor.putLong("endTime", endTime);
+
+        editor.apply();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        SharedPreferences prefs = getSharedPreferences("prefs", MODE_PRIVATE);
+        secondsOne = prefs.getInt("secondsOne", 0);
+        runningOne = prefs.getBoolean("timerOneRunning", false);
+        secondsTwo = prefs.getInt("secondsTwo", 0);
+        runningTwo = prefs.getBoolean("timerTwoRunning", false);
+        secondsThree = prefs.getInt("secondsTwo", 0);
+        runningThree = prefs.getBoolean("timerThreeRunning", false);
+        endTime = prefs.getLong("endTime", 0);
+        long lTimeDiff = (System.currentTimeMillis() - endTime) / 1000;
+        int iTimeDiff = (int)lTimeDiff;
+
+
+        if (runningOne) {
+            secondsOne = secondsOne + iTimeDiff;
+        }
+        if (runningTwo) {
+            secondsTwo = secondsTwo + iTimeDiff;
+        }
+        if (runningThree) {
+            secondsThree = secondsThree + iTimeDiff;
+        }
 
 
     }
+}
 
 
 
