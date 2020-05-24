@@ -1,44 +1,25 @@
 package com.koioc.billables;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.PowerManager;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.os.Bundle;
-import android.app.Service;
-import android.view.WindowManager;
-
-import java.text.DecimalFormat;
 import java.util.Locale;
-
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
-import org.w3c.dom.Text;
-
-
-
 public class MainActivity extends AppCompatActivity {
-
 
     double billIncrement = .1;
     int secondsOne = 0;
@@ -63,35 +44,19 @@ public class MainActivity extends AppCompatActivity {
     double testHours = 0;
     long endTime;
 
-    /*
-       //popup information
-        LayoutInflater inflaterOne = (LayoutInflater)
-                getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupViewOne = inflaterOne.inflate(R.layout.adjustonelayout, null);
-
-        //create popup window
-        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        boolean focusable = true; // lets taps outside the popup dismiss it
-        final PopupWindow popupWindowOne = new PopupWindow(popupViewOne, width, height, focusable);
-
-    */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         setContentView(R.layout.activity_main);
 
-
         //Ad Code
-        //MobileAds.initialize(this, new OnInitializationCompleteListener(){
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-7093767474774984~9927526258");
-        //@Override
-        /*    public void onInitializationComplete(InitializationStatus initializationStatus){   }
+        MobileAds.initialize(this, new OnInitializationCompleteListener(){
+        @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus){   }
         });
 
-         */
+
         AdView mAdView = findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
@@ -133,40 +98,7 @@ public class MainActivity extends AppCompatActivity {
         savedInstanceState.putBoolean("wasRunningThree", runningThree);
     }
 
-    // if the activity is paused, stop the stopwatch
-    // THIS MAY NEED TO BE ELIMIANTED IF THE STOPWATCH STOPS WHEN YOU SWITCH APPS
 
-    /*
-    @Override
-    protected void onPause() {
-        super.onPause();
-        wasRunningOne = runningOne;
-        runningOne = false;
-        wasRunningTwo = runningTwo;
-        runningTwo = false;
-        wasRunningThree = runningThree;
-        runningThree = false;
-    }
-
-
-     */
-    //if the activity is resumed, start the stopwatch if it was running previously
-    //THIS MAY NEED TO BE ELIMINATED IF THE STOPWATCH RUNS WHEN YOU SWITCH APPS
-    /*
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (wasRunningOne) {
-            runningOne = true;
-        }
-        if (wasRunningTwo) {
-            runningTwo = true;
-        }
-        if (wasRunningThree) {
-            runningThree = true;
-        }
-    }
-*/
 
     private void runTimer() {
         //Get the text view
@@ -179,18 +111,6 @@ public class MainActivity extends AppCompatActivity {
 
         // creates a new handler
         final Handler handlerOne = new Handler();
-
-        /*
-        //set up the partial wake lock
-        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyApp::MyWakelockTag");
-        wakeLock.acquire();
-
-
-        if(!anyTimerRunning){
-            wakeLock.release();
-        }
-        */
 
         //call the post method passing in a new Runnable
         //This needs to include each one, not duplicated
@@ -333,8 +253,11 @@ public class MainActivity extends AppCompatActivity {
         int inputAdjustOne = Integer.parseInt(strAdjustOne);
         int inputAdjustOneSecs = inputAdjustOne * 60;
 
-        secondsOne = secondsOne + inputAdjustOneSecs;
-
+        if((secondsOne + inputAdjustOneSecs) < 0) {
+            secondsOne = 0;
+        } else {
+            secondsOne = secondsOne + inputAdjustOneSecs;
+        }
         enterAdjustOne.setText("");
     }
 
@@ -344,8 +267,11 @@ public class MainActivity extends AppCompatActivity {
         String strAdjustTwo = enterAdjustTwo.getText().toString();
         int inputAdjustTwo = Integer.parseInt(strAdjustTwo);
         int inputAdjustTwoSecs = inputAdjustTwo * 60;
-
-        secondsTwo = secondsTwo + inputAdjustTwoSecs;
+        if((secondsTwo + inputAdjustTwoSecs) < 0){
+            secondsTwo = 0;
+        } else {
+            secondsTwo = secondsTwo + inputAdjustTwoSecs;
+        }
 
         enterAdjustTwo.setText("");
     }
@@ -356,8 +282,11 @@ public class MainActivity extends AppCompatActivity {
         String strAdjustThree = enterAdjustThree.getText().toString();
         int inputAdjustThree = Integer.parseInt(strAdjustThree);
         int inputAdjustThreeSecs = inputAdjustThree * 60;
-
-        secondsThree = secondsThree + inputAdjustThreeSecs;
+        if((secondsThree + inputAdjustThreeSecs) < 0){
+            secondsThree = 0;
+        } else {
+            secondsThree = secondsThree + inputAdjustThreeSecs;
+        }
 
         enterAdjustThree.setText("");
 
@@ -461,7 +390,7 @@ public class MainActivity extends AppCompatActivity {
         runningOne = prefs.getBoolean("timerOneRunning", false);
         secondsTwo = prefs.getInt("secondsTwo", 0);
         runningTwo = prefs.getBoolean("timerTwoRunning", false);
-        secondsThree = prefs.getInt("secondsTwo", 0);
+        secondsThree = prefs.getInt("secondsThree", 0);
         runningThree = prefs.getBoolean("timerThreeRunning", false);
         endTime = prefs.getLong("endTime", 0);
         long lTimeDiff = (System.currentTimeMillis() - endTime) / 1000;
